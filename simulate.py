@@ -5,7 +5,7 @@ import src.newick_conversion as newick
 from random import randint
 from settings import settings
 from src.seqgen import run_seqgen
-from src.alrq import convert_to_arp
+from src.arlq import convert_to_arp
 from src.validate_settings import validate
 
 class ErcsSimulation(ercs.Simulator):
@@ -31,6 +31,9 @@ def make_trees(tree_data):
 	return trees
 
 def generate_event_parameters(event, num_replicates):
+	'''
+	Creates a list of random parameters based on simulation priors.
+	'''
 	rate = [randint(event['rate'][0], event['rate'][1])/float(1000) \
 		for i in range(num_replicates)]
 	radius = [randint(event['radius'][0], event['radius'][1]) \
