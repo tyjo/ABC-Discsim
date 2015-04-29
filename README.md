@@ -1,6 +1,6 @@
 # _Inference of dispersal and colonization and dispersal under a spatially-continuous coalescent model_
 
-Simulation code used for data generation in _Inference of dispersal and colonization and dispersal under a spatially-continuous coalescent model_. Methods and results are outlined in the paper.
+Simulation code used for data generation in _Inference of dispersal and colonization and dispersal under a spatially-continuous coalescent model_. Explicit methods and results are outlined in the paper.
 
 ## Dependencies
 * Python v2.7
@@ -28,6 +28,6 @@ Simulation parameters are specified in settings.py. Settings to run each of the 
 3. settings-5000bp.py: increased number of base pairs 
 4. settings-recomb: reduced recombination rate
 
-The simulation code expects the compiled program Seq-Gen (named "seq-gen") in the seqgen folder.
+The simulation code expects the compiled program Seq-Gen (named "seq-gen") in the seqgen folder. First download and compile the program from the link above. Rename the compiled program "seq-gen" and place in the folder named "seqgen."
 
 Simulation parameters and random seeds used to run approximate Bayesian computation analysis are saved in the _parameters.txt_ file. The seed used to run the simulation correspond to the names of the files generated for Arlequin.
