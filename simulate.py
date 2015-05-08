@@ -1,3 +1,5 @@
+# Adapted from http://jeromekelleher.github.io/ercs/
+
 import ercs
 import multiprocessing
 import subprocess as sub
