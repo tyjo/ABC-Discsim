@@ -1,6 +1,6 @@
-# _Inference of dispersal and colonization and dispersal under a spatially-continuous coalescent model_
+# _Inference of dispersal and colonization and dispersal under a spatially-continuous coalescent model_ (in progress)
 
-Simulation code used for data generation in _Inference of dispersal and colonization and dispersal under a spatially-continuous coalescent model_. Explicit methods and results are outlined in the paper.
+Simulation code used for data generation in _Inference of dispersal and colonization and dispersal under a spatially-continuous coalescent model_. This is a work in progress.
 
 ## Dependencies
 * Python v2.7
