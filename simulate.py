@@ -14,7 +14,9 @@ from src.validate_settings import validate
 
 class Simulator(discsim.Simulator):
     def setup(self, event_classes):
-        # ERCS / Discsim Parameters
+        """
+        Set simulation parameters
+        """
         self.sample = [None] + settings["sample_locations"]
         self.event_classes = event_classes
         self.recombination_probability = settings["recombination_probability"]
@@ -69,22 +71,17 @@ class Simulator(discsim.Simulator):
         tau = oriented_trees[1]
         trees = []
 
-        # sometimes an extra 0L and 0.0 are added on to
-        # pi and tau respectively
-        while(tau[-1] == 0.0):
-            pi.pop(-1)
-            tau.pop(-1)
-
         for i, j in zip(pi, tau):
             # convert simulation time to generation time
             j = self._rescale_coalescent_times(j)
 
             # sometimes an extra 0L and 0.0 are added on to
-            # pi and tau respectively. the tree is otherwise correct
+            # pi and tau respectively which breaks the newick script.
+            # the tree is otherwise correct
             while(j[-1] == 0.0):
                 i.pop(-1)
                 j.pop(-1)
-                
+
             trees.append(newick.convert_tree(i, j))
         return trees
 
