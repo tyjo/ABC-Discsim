@@ -3,12 +3,11 @@ import ercs
 import math
 import multiprocessing
 import random
+import re
 import subprocess as sub
 import src.newick_conversion as newick
 import time
 from settings import settings
-from src.seqgen import run_seqgen
-from src.arlq import convert_to_arp
 from src.validate_settings import validate
 
 
@@ -55,7 +54,7 @@ class Simulator(discsim.Simulator):
 
         # File cleanup
         for i in range(1, num_tree):
-        #    sub.call(["rm", filename + "_" + str(i)])
+            sub.call(["rm", filename + "_" + str(i)])
             sub.call(["rm", "DNA_" + str(seed) + "_" + str(i)])
 
         sub.call(["mv", "DNA_" + str(seed), "output_sequences/"])
@@ -88,6 +87,7 @@ class Simulator(discsim.Simulator):
     def _run_seqgen(self, seed, seq_gen_seeds):
         """
         Generates DNA sequences using HKY mutation model from newick trees.
+        Returns a dictionary from sample to list of sequences per loci.
         """
         filename = "tree_" + str(seed)
         partition_lengths = settings["partitions"][:]
@@ -190,6 +190,36 @@ def generate_event_parameters(num_replicates):
     return parameters
 
 
+def convert_to_arp(seed, sequence_dict):
+    """
+    Generate an Arlequin file from DNA sequences.
+    """
+    with open("ARQ_abc_" + str(seed) + ".arp", "w") as f:
+        f.write("[Profile]\n")
+        f.write("\tTitle=\"Discsim generated data\"\n")
+        f.write("\tNbSamples=1\n")
+        f.write("\tGenotypicData=0\n")
+        f.write("\tGameticPhase=1\n")
+        f.write("\tRecessiveData=0\n")
+        f.write("\tDataType=DNA\n")
+        f.write("\tLocusSeparator=TAB\n")
+        f.write("\tMissingData='?'\n")
+        f.write("\n")
+
+        f.write("[Data]\n")
+        f.write("\t[[Samples]]\n")
+        f.write("\n") 
+
+        f.write("\t\tSampleName=\"Population1\"\n")
+        f.write("\t\tSampleSize=" + str(len(settings["sample_locations"])) + "\n")
+        f.write("\t\tSampleData= {\n")
+        
+        for sample in sequence_dict:
+            f.write(re.search("\d+", sample).group(0) + "_1\t1\t")
+            f.write("\t".join(sequence_dict[sample]) + "\n")
+        
+        f.write("\n}\n")
+
 
 def subprocess_worker(t):
     """
@@ -202,18 +232,14 @@ def subprocess_worker(t):
     sim.setup(event_classes)
     seqgen_sequences = sim.run_simulation(seed, seq_gen_seeds)
 
-    nonbifurcation = convert_to_arp(seed, seqgen_sequences)
-
-    if nonbifurcation == True:
-        with open("errors.txt", "a") as f:
-            f.write("nonbifurcation\n")
-            f.write(time.strftime("%X") + "\n")
-            f.write(str(seed) + "\n")
-            f.write(str(tree_data) + "\n")
-
+    convert_to_arp(seed, seqgen_sequences)
 
 
 def run_simulations():
+    """
+    Sets up multiprocessing parameters. Maps arguments
+    to subprocess workers.
+    """
     # Multiprocessing parameters
     if settings["num_cpus"] == 0:
         processes = multiprocessing.cpu_count()
