@@ -56,8 +56,8 @@ class Simulator(discsim.Simulator):
         for i in range(1, num_tree):
             sub.call(["rm", filename + "_" + str(i)])
             sub.call(["rm", "DNA_" + str(seed) + "_" + str(i)])
-
         sub.call(["mv", "DNA_" + str(seed), "output_sequences/"])
+
         return seqgen_sequences
 
     def _make_trees(self, oriented_trees):
@@ -82,6 +82,7 @@ class Simulator(discsim.Simulator):
                 j.pop(-1)
 
             trees.append(newick.convert_tree(i, j))
+
         return trees
 
     def _run_seqgen(self, seed, seq_gen_seeds):
@@ -92,6 +93,7 @@ class Simulator(discsim.Simulator):
         filename = "tree_" + str(seed)
         partition_lengths = settings["partitions"][:]
         num_tree = int(settings["num_partitions"])
+
         for tree in range(1, num_tree + 1):
             i = tree - 1
             sub.call("./seqgen/seq-gen -mHKY -t2 -f0.35,0.15,0.25,0.25 -op -l{0} -s{1} -z{2} < {3}_{4} \
@@ -138,9 +140,9 @@ def generate_event_parameters(num_replicates):
         return (seed, seq_gen_seeds, event_classes, pop_size)
 
     def extinction_rate_parameter_set():
-        seed = randint(1, 2**31)
+        seed = random.randint(1, 2**31)
         seq_gen_seeds = [random.randint(1, 2**31 - 1) for i in range(int(settings["num_partitions"]))]
-        large_rate = random.randint(settings["large_event"]["rate"][0], settings["large_event"]["rate"][1])/1000.0
+        large_rate = 1.0 / random.randint(settings["large_event"]["rate"][0], settings["large_event"]["rate"][1])
         large_radius = random.randint(settings["large_event"]["radius"][0], settings["large_event"]["radius"][1])
         u0 = (2 * settings["length"]**2) / (settings['population_size'][0] * math.pi * large_radius**2)
         small_rate = settings["small_event"]["rate"]
@@ -152,6 +154,7 @@ def generate_event_parameters(num_replicates):
         return (seed, seq_gen_seeds, event_classes, 0)
     
     random.seed()
+
     if(settings["estimate_population_size"]):
         parameters = [ population_density_parameter_set() for i in xrange(num_replicates) ]
 
@@ -176,14 +179,14 @@ def generate_event_parameters(num_replicates):
         with open(filename, "w") as f:
             seed_parameters = {}
             f.write("seed\tlarge_rate\tlarge_radius\tu0\tsmall_rate\tsmall_radius\tu1\n")
-            for seed, seq_gen_seeds, event_classes in parameters:
+            for seed, seq_gen_seeds, event_classes, x in parameters:
                 small_event = event_classes[0]
                 large_event = event_classes[1]
                 seed_parameters[str(seed)] = (large_event.rate, large_event.r, large_event.u,
                                               small_event.rate, small_event.r, small_event.u)
             # Need to sort by string value to have same ordering as Arlequin
             for seed in sorted(seed_parameters):
-                f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t".format(seed, seed_parameters[seed][0], seed_parameters[seed][1],
+                f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(seed, seed_parameters[seed][0], seed_parameters[seed][1],
                                                                     seed_parameters[seed][2], seed_parameters[seed][3],
                                                                     seed_parameters[seed][4], seed_parameters[seed][5]))
 
@@ -220,6 +223,8 @@ def convert_to_arp(seed, sequence_dict):
         
         f.write("\n}\n")
 
+    sub.call("mv " + "ARQ_abc_" + str(seed) + ".arp ./arlsumstat_files/ &> /dev/null &", shell=True)
+
 
 def subprocess_worker(t):
     """
@@ -250,25 +255,21 @@ def run_simulations():
     args = generate_event_parameters(settings["num_replicates"])
     
     # use for running simulations
-    #replicates = workers.map(subprocess_worker, arg)
+    replicates = workers.map(subprocess_worker, args)
     
     #Use this for testing
-    for arg in args:
-        subprocess_worker(arg)
+    #for arg in args:
+    #    subprocess_worker(arg)
 
 
 
 if __name__ == "__main__":
-    print "Loading settings..."
     print "Validating settings file..."
     validate()
+
     print "Starting simulations..."
     start_time = time.strftime("%X")
     run_simulations()
-
-    for i in range(10):
-        for j in range(10):
-            sub.call("mv ARQ_abc_{}{}* arlsumstat_files/ &> /dev/null &".format(str(i), str(j)), shell=True)
 
     print "Done!"
     print "Start Time: " + start_time
