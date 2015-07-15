@@ -1,13 +1,8 @@
-# This defines samples within the landscape in ERCS. Each tuple defines
-# a coordinate where (0, 0) is the bottom left corner.
-sample = [ (12.5, 12.5), (37.5, 37.5), (62.5, 12.5), (87.5, 37.5),
-           (12.5, 62.5), (37.5, 87.5), (62.5, 62.5), (87.5, 87.5) ]
-
 settings = {
     ### ERCS Settings ###
     'length': 100, # torus side length
-    # Need to update GeneSamples_TEMPLATE.arp if you change this.
-    'sample_locations': sample,
+    'sample_locations': [ (12.5, 12.5), (37.5, 37.5), (62.5, 12.5), (87.5, 37.5), 
+                          (12.5, 62.5), (37.5, 87.5), (62.5, 62.5), (87.5, 87.5) ],
     'recombination_probability': 0.5,
     'num_replicates': 10000,
 
