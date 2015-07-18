@@ -33,10 +33,10 @@ def validate():
 
         # Check list internal types
         for sample in settings['sample_locations']:
-            assert type(sample) is tuple, "sample_locations must be list of tuples of ints: [(int, int)]"
-            assert type(sample[0]) is int, "sample_locations must be integer values"
-            assert type(sample[1]) is int, "sample_locations must be integar values"
-            assert len(sample) is 2, "sample_locations must only contain two values (int, int)"
+            assert type(sample) is tuple, "sample_locations must be list of tuples of ints: [(double, double)]"
+            assert type(sample[0]) is float, "sample_locations must be double values"
+            assert type(sample[1]) is float, "sample_locations must be double values"
+            assert len(sample) is 2, "sample_locations must only contain two values (double, double)"
 
         assert type(settings['small_event']['rate']) is float, "small_event rate must be float"
         assert type(settings['small_event']['radius']) is int, "small_event radius must be int"
