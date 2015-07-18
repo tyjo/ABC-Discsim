@@ -96,11 +96,10 @@ class Simulator(discsim.Simulator):
 
         for tree in range(1, num_tree + 1):
             i = tree - 1
-            sub.call("./seqgen/seq-gen -mHKY -t2 -f0.35,0.15,0.25,0.25 -op -l{0} -s{1} -z{2} < {3}_{4} \
-                > DNA_{5}_{4}".format(\
-                            settings["partitions"][i], settings["mutation_rate"],
-                            str(seq_gen_seeds[i]), filename, str(tree), str(seed)),
-                        shell=True)
+            sub.call("./seqgen/seq-gen -mHKY -t2 -f0.35,0.15,0.25,0.25 -op -l{0} -s{1} -z{2} < {3}_{4} > DNA_{5}_{4}" \
+                .format(settings["partitions"][i], settings["mutation_rate"],
+                    str(seq_gen_seeds[i]), filename, str(tree), str(seed)),
+                shell=True)
 
         sequences = {}
         for j in range(1, num_tree + 1):
@@ -232,11 +231,10 @@ def subprocess_worker(t):
     """
     # pop_size is unused here
     seed, seq_gen_seeds, event_classes, pop_size = t
-
     sim = Simulator(settings["length"])
     sim.setup(event_classes)
-    seqgen_sequences = sim.run_simulation(seed, seq_gen_seeds)
 
+    seqgen_sequences = sim.run_simulation(seed, seq_gen_seeds)
     convert_to_arp(seed, seqgen_sequences)
 
 
@@ -268,12 +266,12 @@ if __name__ == "__main__":
     validate()
 
     print "Starting simulations..."
-    start_time = time.strftime("%X")
+    start_time = time.strftime("%x") + " " + time.strftime("%X")
     run_simulations()
 
     print "Done!"
     print "Start Time: " + start_time
-    print "Stop Time: " + time.strftime("%X")
+    print "Stop Time: " + time.strftime("%x") + " " + time.strftime("%X")
 
 
 
