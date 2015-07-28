@@ -253,11 +253,11 @@ def run_simulations():
     args = generate_event_parameters(settings["num_replicates"])
     
     # use for running simulations
-    #replicates = workers.map(subprocess_worker, args)
+    replicates = workers.map(subprocess_worker, args)
     
     #Use this for testing
-    for arg in args:
-        subprocess_worker(arg)
+    #for arg in args:
+    #    subprocess_worker(arg)
 
 
 
