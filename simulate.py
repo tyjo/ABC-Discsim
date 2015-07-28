@@ -20,6 +20,7 @@ class Simulator(discsim.Simulator):
         self.event_classes = event_classes
         self.recombination_probability = settings["recombination_probability"]
         self.num_loci = int(settings["num_partitions"])
+        self.num_parents = settings["num_parents"]
 
     def run_simulation(self, seed, seq_gen_seeds):
         """
@@ -47,7 +48,6 @@ class Simulator(discsim.Simulator):
         seqgen_sequences = self._run_seqgen(seed, seq_gen_seeds)
 
         with open("DNA_" + str(seed), "w") as f:
-            f.write("Mutation rate for each loci {}\n".format(settings["mutation_rate"]))
             for seq in seqgen_sequences:
                 sequence = "\t".join(seqgen_sequences[seq])
                 f.write("{0}\t{1}\n".format(seq, sequence))
@@ -97,7 +97,7 @@ class Simulator(discsim.Simulator):
         for tree in range(1, num_tree + 1):
             i = tree - 1
             sub.call("./seqgen/seq-gen -mHKY -t2 -f0.35,0.15,0.25,0.25 -op -l{0} -s{1} -z{2} < {3}_{4} > DNA_{5}_{4}" \
-                .format(settings["partitions"][i], settings["mutation_rate"],
+                .format(settings["partitions"][i], settings["mutation_rates"][i],
                     str(seq_gen_seeds[i]), filename, str(tree), str(seed)),
                 shell=True)
 
@@ -128,40 +128,40 @@ def generate_event_parameters(num_replicates):
     """
     Make parameter sets for simulations, write to output file.
     """
-    def population_density_parameter_set():
+    def neighborhood_parameter_set():
         seed = random.randint(1, 2**31 - 1)
         seq_gen_seeds = [random.randint(1, 2**31 - 1) for i in range(int(settings["num_partitions"]))]
         rate = settings["small_event"]["rate"]
         radius = settings["small_event"]["radius"]
-        pop_size = random.randint(settings["population_size"][0], settings["population_size"][1])
-        u0 = (2 * settings["length"]**2) / ( pop_size * math.pi * radius**2 )
+        n_size = random.randint(settings["neighborhood_size"][0], settings["neighborhood_size"][1])
+        u0 = 2.0 / n_size
         event_classes = [  ercs.DiscEventClass(rate = rate, r = radius, u = u0) ]
-        return (seed, seq_gen_seeds, event_classes, pop_size)
+        return (seed, seq_gen_seeds, event_classes, n_size)
 
     def extinction_rate_parameter_set():
-        seed = random.randint(1, 2**31)
+        seed = random.randint(1, 2**31 - 1)
         seq_gen_seeds = [random.randint(1, 2**31 - 1) for i in range(int(settings["num_partitions"]))]
-        large_rate = 1.0 / random.randint(settings["large_event"]["rate"][0], settings["large_event"]["rate"][1])
+        large_rate = random.randint(settings["large_event"]["rate"][0], settings["large_event"]["rate"][1]) / 1000.0
         large_radius = random.randint(settings["large_event"]["radius"][0], settings["large_event"]["radius"][1])
-        u0 = (2 * settings["length"]**2) / (settings['population_size'][0] * math.pi * large_radius**2)
+        u0 = random.randint(settings["large_event"]["u"][0], settings["large_event"]["u"][1]) / 10000.0
         small_rate = settings["small_event"]["rate"]
         small_radius = settings["small_event"]["radius"]
-        u1 = (2* settings["length"]**2) / (settings["population_size"][0] * math.pi * small_radius**2)
+        u1 = 2.0 / settings["neighborhood_size"][0]
         event_classes = [ ercs.DiscEventClass(rate = small_rate, r = small_radius, u = u1),
-                          ercs.DiscEventClass(rate = large_rate, r = large_radius, u = u0)]
+                          ercs.DiscEventClass(rate = large_rate, r = large_radius, u = u0) ]
         # need to have same number of parameters as above, 0 is unused.
         return (seed, seq_gen_seeds, event_classes, 0)
     
     random.seed()
 
-    if(settings["estimate_population_size"]):
-        parameters = [ population_density_parameter_set() for i in xrange(num_replicates) ]
+    if(settings["estimate_neighborhood_size"]):
+        parameters = [ neighborhood_parameter_set() for i in xrange(num_replicates) ]
 
         filename = "parameters_{}_{}.txt".format(time.strftime("%x"), time.strftime("%X"))
         filename = filename.replace("/","_").replace(":","")
         with open(filename, "w") as f:
             seed_parameters = {}
-            f.write("seed\trate\tradius\tu\tpop_size\n")
+            f.write("seed\trate\tradius\tu\tn_size\n")
             for seed, seq_gen_seeds, event_classes, pop_size in parameters:
                 event = event_classes[0]
                 seed_parameters[str(seed)] = (event.rate, event.r, event.u, pop_size)
@@ -253,11 +253,11 @@ def run_simulations():
     args = generate_event_parameters(settings["num_replicates"])
     
     # use for running simulations
-    replicates = workers.map(subprocess_worker, args)
+    #replicates = workers.map(subprocess_worker, args)
     
     #Use this for testing
-    #for arg in args:
-    #    subprocess_worker(arg)
+    for arg in args:
+        subprocess_worker(arg)
 
 
 
