@@ -27,11 +27,12 @@ def validate():
         for rate in settings['mutation_rates']:
             assert(type(rate) is float, "mutation_rates must be double")
 
-        assert type(settings['small_event']['rate']) is float, "small_event rate must be float"
-        assert type(settings['small_event']['radius']) is int, "small_event radius must be int"
+        assert type(settings['small_event']['rate'][0]) is float, "small_event rate must be float"
+        assert type(settings['small_event']['radius'][0]) is float, "small_event radius must be double"
+        assert type(settings['small_event']['radius'][1]) is float, "small_event radius must be double"
 
         assert type(settings['large_event']['rate'][0]) is float, "large_event rate must be float"
-        assert type(settings['large_event']['rate'][1]) is float ,"large_event rate must be float"
+        assert type(settings['large_event']['rate'][1]) is float,"large_event rate must be float"
         assert len(settings['large_event']['rate']) == 2, "large_event rate can only take 2 priors"
         assert settings['large_event']['rate'][0] <= settings['large_event']['rate'][1], "large_event prior lower bound must be less than upper bound"
 

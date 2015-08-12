@@ -121,7 +121,11 @@ class Simulator(discsim.Simulator):
         to generation time.
         """
         event = self.event_classes[0] # reproduction events
-        return map(lambda x: x * event.rate * event.u * math.pi * event.r**2, tau)
+        if settings["dimensions"] == 1:
+            scaled = map(lambda x: x * event.rate * event.u * math.pi * event.r**2, tau)
+        elif settings["dimensions"] == 2:
+            scaled = map(lambda x: x * event.rate * event.u * event.r * 2, tau)
+        return scaled
 
 
 def generate_event_parameters(num_replicates):
@@ -131,10 +135,10 @@ def generate_event_parameters(num_replicates):
     def neighborhood_parameter_set():
         seed = random.randint(1, 2**31 - 1)
         seq_gen_seeds = [random.randint(1, 2**31 - 1) for i in range(int(settings["num_partitions"]))]
-        rate = settings["small_event"]["rate"]
-        radius = settings["small_event"]["radius"]
+        rate = random.randint(settings["small_event"]["rate"][0], settings["small_event"]["rate"][1]) / 1000.0
+        radius = random.randint(settings["small_event"]["radius"][0], settings["small_event"]["radius"][1])
         n_size = random.randint(settings["neighborhood_size"][0], settings["neighborhood_size"][1])
-        u0 = 2.0 / n_size
+        u0 = settings["num_parents"] / float(n_size)
         event_classes = [  ercs.DiscEventClass(rate = rate, r = radius, u = u0) ]
         return (seed, seq_gen_seeds, event_classes, n_size)
 
@@ -144,9 +148,9 @@ def generate_event_parameters(num_replicates):
         large_rate = random.randint(settings["large_event"]["rate"][0], settings["large_event"]["rate"][1]) / 1000.0
         large_radius = random.randint(settings["large_event"]["radius"][0], settings["large_event"]["radius"][1])
         u0 = random.randint(settings["large_event"]["u"][0], settings["large_event"]["u"][1]) / 10000.0
-        small_rate = settings["small_event"]["rate"]
+        small_rate = settings["small_event"]["rate"][0]
         small_radius = settings["small_event"]["radius"]
-        u1 = 2.0 / settings["neighborhood_size"][0]
+        u1 = settings["num_parents"] / settings["neighborhood_size"][0]
         event_classes = [ ercs.DiscEventClass(rate = small_rate, r = small_radius, u = u1),
                           ercs.DiscEventClass(rate = large_rate, r = large_radius, u = u0) ]
         # need to have same number of parameters as above, 0 is unused.
@@ -253,11 +257,11 @@ def run_simulations():
     args = generate_event_parameters(settings["num_replicates"])
     
     # use for running simulations
-    replicates = workers.map(subprocess_worker, args)
+    #replicates = workers.map(subprocess_worker, args)
     
     #Use this for testing
-    #for arg in args:
-    #    subprocess_worker(arg)
+    for arg in args:
+        subprocess_worker(arg)
 
 
 
