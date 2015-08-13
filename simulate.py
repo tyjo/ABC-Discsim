@@ -124,10 +124,6 @@ class Simulator(discsim.Simulator):
         L_d = float(settings["length"] ** settings["dimensions"])
         A = math.pi * (event.r**2) if settings["dimensions"] == 2 else 2 * event.r
         scaled = map(lambda x: x * L_d / ( event.rate * event.u * A ), tau )
-        print "Tau: ",
-        print tau
-        print "Scaled: ",
-        print scaled
         return scaled
 
 
