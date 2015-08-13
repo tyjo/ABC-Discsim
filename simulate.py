@@ -121,10 +121,13 @@ class Simulator(discsim.Simulator):
         to generation time.
         """
         event = self.event_classes[0] # reproduction events
-        if settings["dimensions"] == 1:
-            scaled = map(lambda x: x * event.rate * event.u * math.pi * event.r**2, tau)
-        elif settings["dimensions"] == 2:
-            scaled = map(lambda x: x * event.rate * event.u * event.r * 2, tau)
+        L_d = float(settings["length"] ** settings["dimensions"])
+        A = math.pi * (event.r**2) if settings["dimensions"] == 2 else 2 * event.r
+        scaled = map(lambda x: x * L_d / ( event.rate * event.u * A ), tau )
+        print "Tau: ",
+        print tau
+        print "Scaled: ",
+        print scaled
         return scaled
 
 
@@ -256,12 +259,11 @@ def run_simulations():
     workers = multiprocessing.Pool(processes=processes, maxtasksperchild=1000)
     args = generate_event_parameters(settings["num_replicates"])
     
-    # use for running simulations
-    #replicates = workers.map(subprocess_worker, args)
-    
-    #Use this for testing
-    for arg in args:
-        subprocess_worker(arg)
+    if not settings["debug"]:
+        replicates = workers.map(subprocess_worker, args)
+    else:
+        for arg in args:
+            subprocess_worker(arg)
 
 
 
