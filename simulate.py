@@ -123,7 +123,7 @@ class Simulator(discsim.Simulator):
         event = self.event_classes[0] # reproduction events
         L_d = float(settings["length"] ** settings["dimensions"])
         A = math.pi * (event.r**2) if settings["dimensions"] == 2 else 2 * event.r
-        scaled = map(lambda x: x * L_d / ( event.rate * event.u * A ), tau )
+        scaled = map(lambda x: ( x * event.rate * event.u * A ) / L_d, tau )
         return scaled
 
 
