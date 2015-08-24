@@ -143,25 +143,53 @@ def generate_event_parameters(num_replicates):
 
     def extinction_rate_parameter_set():
         seed = random.randint(1, 2**31 - 1)
-        seq_gen_seeds = [random.randint(1, 2**31 - 1) for i in range(int(settings["num_partitions"]))]
+        seq_gen_seeds = [random.randint(1, 2**31 - 1) for i in xrange(int(settings["num_partitions"]))]
         large_rate = random.randint(settings["large_event"]["rate"][0], settings["large_event"]["rate"][1]) / 1000.0
         large_radius = random.randint(settings["large_event"]["radius"][0], settings["large_event"]["radius"][1])
         u0 = random.randint(settings["large_event"]["u"][0], settings["large_event"]["u"][1]) / 10000.0
         small_rate = settings["small_event"]["rate"][0]
         small_radius = settings["small_event"]["radius"]
-        u1 = settings["num_parents"] / settings["neighborhood_size"][0]
+        u1 = settings["num_parents"] / float(settings["neighborhood_size"][0])
         event_classes = [ ercs.DiscEventClass(rate = small_rate, r = small_radius, u = u1),
                           ercs.DiscEventClass(rate = large_rate, r = large_radius, u = u0) ]
         # need to have same number of parameters as above, 0 is unused.
         return (seed, seq_gen_seeds, event_classes, 0)
+
+    def posterior_parameter_set(f_lines, length):
+        seed = random.randint(1, 2**31 - 1)
+        seq_gen_seeds = [random.randint(1, 2**31 - 1) for i in xrange(int(settings["num_partitions"]))]
+        rate = 1.0
+        line = f_lines[random.randint(1, length)].strip("\n").split(",")
+        radius = float(line[0])
+        u = settings["num_parents"] / float(line[1])
+        event_classes = [ ercs.DiscEventClass(rate = rate, r = radius, u = u)]
+        return (seed, seq_gen_seeds, event_classes, line[1])
     
     random.seed()
+    filename = "parameters_{}_{}.txt".format(time.strftime("%x"), time.strftime("%X"))
+    filename = filename.replace("/","_").replace(":","")
 
-    if(settings["estimate_neighborhood_size"]):
+    if(settings["posterior_predictive_checks"]):
+
+        with open(settings["posterior_parameter_file"]) as f:
+            lines = f.readlines()
+            length = len(lines)
+            parameters = [ posterior_parameter_set(lines, length) for i in xrange(num_replicates) ]
+        
+        with open(filename, "w") as f:
+            seed_parameters = {}
+            f.write("seed\trate\tradius\tu\tn_size\n")
+            for seed, seq_gen_seeds, event_classes, pop_size in parameters:
+                event = event_classes[0]
+                seed_parameters[str(seed)] = (event.rate, event.r, event.u, pop_size)
+            # Need to sort by string value to have same ordering as Arlequin
+            for seed in sorted(seed_parameters):
+                f.write("{}\t{}\t{}\t{}\t{}\n".format(seed, seed_parameters[seed][0], seed_parameters[seed][1],
+                                                            seed_parameters[seed][2], seed_parameters[seed][3]))
+
+    elif(settings["estimate_neighborhood_size"]):
         parameters = [ neighborhood_parameter_set() for i in xrange(num_replicates) ]
 
-        filename = "parameters_{}_{}.txt".format(time.strftime("%x"), time.strftime("%X"))
-        filename = filename.replace("/","_").replace(":","")
         with open(filename, "w") as f:
             seed_parameters = {}
             f.write("seed\trate\tradius\tu\tn_size\n")
@@ -176,8 +204,6 @@ def generate_event_parameters(num_replicates):
     else:
         parameters = [ extinction_rate_parameter_set() for i in xrange(num_replicates) ]
 
-        filename = "parameters_{}_{}.txt".format(time.strftime("%x"), time.strftime("%X"))
-        filename = filename.replace("/","_").replace(":","")
         with open(filename, "w") as f:
             seed_parameters = {}
             f.write("seed\tlarge_rate\tlarge_radius\tu0\tsmall_rate\tsmall_radius\tu1\n")
