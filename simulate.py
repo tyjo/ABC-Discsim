@@ -144,7 +144,7 @@ def generate_event_parameters(num_replicates):
     def extinction_rate_parameter_set():
         seed = random.randint(1, 2**31 - 1)
         seq_gen_seeds = [random.randint(1, 2**31 - 1) for i in xrange(int(settings["num_partitions"]))]
-        large_rate = random.uniform(settings["large_event"]["rate"][0], settings["large_event"]["rate"][1])
+        large_rate = random.uniform(settings["large_event"]["rate"][0], settings["large_event"]["rate"][1]) / 1000.0
         large_radius = random.uniform(settings["large_event"]["radius"][0], settings["large_event"]["radius"][1])
         u0 = random.uniform(settings["large_event"]["u"][0], settings["large_event"]["u"][1]) / 10000.0
         small_rate = settings["small_event"]["rate"][0] / 1000.0
