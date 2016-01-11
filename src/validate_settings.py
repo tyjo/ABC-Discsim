@@ -11,12 +11,11 @@ def validate():
     # Type checks
     try:
         assert type(settings['length']) is int, "length must be int"
-        assert type(settings['sample_locations']) is list, "sample_locations must be list of (int, int)" 
-        assert type(settings['recombination_probability']) is float, "recombination_probability must be double"
+        assert type(settings['sample_locations']) is list, "sample_locations must be list of (float, float)" 
+        assert type(settings['recombination_probability']) is float, "recombination_probability must be float"
         assert type(settings['num_replicates']) is int, "num_replicates must be int"
         assert type(settings['small_event']) is dict, "small_event must be dict"
-        assert type(settings['large_event']) is dict, "large_event must be dict" 
-        assert type(settings['mutation_rates']) is list, "mutation_rate must be list of double"
+        assert type(settings['mutation_rates']) is list, "mutation_rate must be list of float"
         assert len(settings['mutation_rates']) == len(settings['partitions']), "must specify mutation rate for each partition"
         assert type(settings['seq_length']) is str, "seq_length must be string"
         assert type(settings['num_partitions']) is str, "num_partitions must be str"
@@ -30,15 +29,6 @@ def validate():
         assert type(settings['small_event']['rate'][0]) is float, "small_event rate must be float"
         assert type(settings['small_event']['radius'][0]) is float, "small_event radius must be double"
         assert type(settings['small_event']['radius'][1]) is float, "small_event radius must be double"
-
-        assert type(settings['large_event']['rate'][0]) is float, "large_event rate must be float"
-        assert type(settings['large_event']['rate'][1]) is float,"large_event rate must be float"
-        assert len(settings['large_event']['rate']) == 2, "large_event rate can only take 2 priors"
-        assert settings['large_event']['rate'][0] <= settings['large_event']['rate'][1], "large_event prior lower bound must be less than upper bound"
-
-        assert type(settings['large_event']['radius'][0]) is int, "large_event radius must be int"
-        assert type(settings['large_event']['radius'][1]) is int,"large_event radius must be int"
-        assert len(settings['large_event']['radius']) == 2, "large_event radius can only take 2 priors"
 
     except AssertionError, e:
         exit("Error in settings: {}".format(e.args[0]))

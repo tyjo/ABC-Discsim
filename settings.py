@@ -17,19 +17,14 @@ settings = {
     'recombination_probability': 0.5,
     'num_replicates': 100,
     'num_parents': 1,
-    'posterior_predictive_checks': True,
+    'posterior_predictive_checks': False,
     'posterior_parameter_file': 'shrub_posterior',
 
     # If true, parameters for events are 
     # set based on population density.
-    'estimate_neighborhood_size': True,
     'neighborhood_size': (200, 200),
     'small_event': { 'rate': (1000.0, 1000.0), 'radius': (5.0, 5.0) },
 
-    # Only used if estimate_population_size is False
-    # Estimate extinction rate / radius
-    'large_event': { 'rate': (10.0, 1000.0), 'radius': (15, 15), 'u': (25, 1000) }, # range of priors for event rate
-    
     ### SeqGen Settings ###
     'mutation_rates': [ 1.25e-8, 1.25e-8, 3.475e-8, 3.475e-8, 3.475e-8 ], 
     'seq_length': '2811',

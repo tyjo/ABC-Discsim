@@ -141,20 +141,6 @@ def generate_event_parameters(num_replicates):
         event_classes = [  ercs.DiscEventClass(rate = rate, r = radius, u = u0) ]
         return (seed, seq_gen_seeds, event_classes, n_size)
 
-    def extinction_rate_parameter_set():
-        seed = random.randint(1, 2**31 - 1)
-        seq_gen_seeds = [random.randint(1, 2**31 - 1) for i in xrange(int(settings["num_partitions"]))]
-        large_rate = random.uniform(settings["large_event"]["rate"][0], settings["large_event"]["rate"][1]) / 1000.0
-        large_radius = random.uniform(settings["large_event"]["radius"][0], settings["large_event"]["radius"][1])
-        u0 = random.uniform(settings["large_event"]["u"][0], settings["large_event"]["u"][1]) / 10000.0
-        small_rate = settings["small_event"]["rate"][0] / 1000.0
-        small_radius = settings["small_event"]["radius"]
-        u1 = settings["num_parents"] / float(settings["neighborhood_size"][0])
-        event_classes = [ ercs.DiscEventClass(rate = small_rate, r = small_radius, u = u1),
-                          ercs.DiscEventClass(rate = large_rate, r = large_radius, u = u0) ]
-        # need to have same number of parameters as above, 0 is unused.
-        return (seed, seq_gen_seeds, event_classes, 0)
-
     def posterior_parameter_set(f_lines, length):
         seed = random.randint(1, 2**31 - 1)
         seq_gen_seeds = [random.randint(1, 2**31 - 1) for i in xrange(int(settings["num_partitions"]))]
@@ -187,7 +173,7 @@ def generate_event_parameters(num_replicates):
                 f.write("{}\t{}\t{}\t{}\t{}\n".format(seed, seed_parameters[seed][0], seed_parameters[seed][1],
                                                             seed_parameters[seed][2], seed_parameters[seed][3]))
 
-    elif(settings["estimate_neighborhood_size"]):
+    else:
         parameters = [ neighborhood_parameter_set() for i in xrange(num_replicates) ]
 
         with open(filename, "w") as f:
@@ -200,23 +186,6 @@ def generate_event_parameters(num_replicates):
             for seed in sorted(seed_parameters):
                 f.write("{}\t{}\t{}\t{}\t{}\n".format(seed, seed_parameters[seed][0], seed_parameters[seed][1],
                                                             seed_parameters[seed][2], seed_parameters[seed][3]))
-
-    else:
-        parameters = [ extinction_rate_parameter_set() for i in xrange(num_replicates) ]
-
-        with open(filename, "w") as f:
-            seed_parameters = {}
-            f.write("seed\tlarge_rate\tlarge_radius\tu0\tsmall_rate\tsmall_radius\tu1\n")
-            for seed, seq_gen_seeds, event_classes, x in parameters:
-                small_event = event_classes[0]
-                large_event = event_classes[1]
-                seed_parameters[str(seed)] = (large_event.rate, large_event.r, large_event.u,
-                                              small_event.rate, small_event.r, small_event.u)
-            # Need to sort by string value to have same ordering as Arlequin
-            for seed in sorted(seed_parameters):
-                f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(seed, seed_parameters[seed][0], seed_parameters[seed][1],
-                                                                    seed_parameters[seed][2], seed_parameters[seed][3],
-                                                                    seed_parameters[seed][4], seed_parameters[seed][5]))
 
     return parameters
 
