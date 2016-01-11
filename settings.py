@@ -1,4 +1,13 @@
 settings = {
+    ### General Settings ###
+    'num_replicates': 100,
+    'posterior_predictive_checks': False,
+    'posterior_parameter_file': 'shrub_posterior',
+
+    # Multiprocessing settings
+    # If set to 0, all CPUs are used
+    'num_cpus': 8,
+
     ### ERCS Settings ###
     'length': 200, # torus side length
     'dimensions': 2,
@@ -15,14 +24,11 @@ settings = {
                           (137.646648248, 85.9689787213), (14.9144976007, 114.585187339), (4.86040424604, 111.613397315), 
                           (0.0, 112.678057292) ],
     'recombination_probability': 0.5,
-    'num_replicates': 100,
     'num_parents': 1,
-    'posterior_predictive_checks': False,
-    'posterior_parameter_file': 'shrub_posterior',
 
     # If true, parameters for events are 
     # set based on population density.
-    'neighborhood_size': (200, 200),
+    'neighborhood_size': (20, 20),
     'small_event': { 'rate': (1000.0, 1000.0), 'radius': (5.0, 5.0) },
 
     ### SeqGen Settings ###
@@ -30,10 +36,6 @@ settings = {
     'seq_length': '2811',
     'num_partitions': '5',
     'partitions': ['1181', '959', '275', '163', '233'],
-
-    ### Multiprocessing settings ###
-    # If set to 0, all CPUs are used
-    'num_cpus': 8,
 
     ### Testing Settings ###
     'debug': True
