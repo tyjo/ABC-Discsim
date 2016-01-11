@@ -27,3 +27,31 @@ The simulation code sets up files for analysis in Arlequin, however Arlequin is 
 The simulation code expects the compiled program Seq-Gen (named "seq-gen") in the seqgen folder. First download and compile the program from the link above. Rename the compiled program "seq-gen" and place in the folder named "seqgen."
 
 Simulation parameters and random seeds used to run approximate Bayesian computation analysis are saved in the _parameters.txt_ file. The seed used to run the simulation correspond to the names of the files generated for Arlequin.
+
+## Settings
+Simulation settings a specified in the settings.py file.
+
+### Discsim Parameters
+* length: specifies the size of the torus
+* dimensions: specifies either 1D or 2D simulations
+* sample_locations: coordinates for sample locations
+* recombination_probability: probability of recombination along loci
+* num_parents: set the number of parents of each sample
+
+### General Parameters
+* num_replicates: specifies the number of simulations to run
+* posterior_predictive_checks: if true, simulation parameters are drawn randomly from the file specified under "posterior_parameter_file"
+* posterior_parameter_file: parameter values of retained simulations from ABC (see example file)
+* neighborhood_size: the upper and lower bound for the neighborhood size prior. Values for neighborhood size are drawn from a uniform distribution.
+* small_event: upper and lower bounds for the event prior.
+* num_cpus: number of cores available to run simulations
+
+### SeqGen Parameters
+* mutation_rates: the per locus mutation rate
+* seq_length: sum of the number of base pairs of all loci
+* num_partitions: total number of loci
+* partitions: base pair length of each loci
+
+
+### Testing Parameters
+* debug: set to False when running simulations
