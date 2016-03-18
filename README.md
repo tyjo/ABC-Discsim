@@ -1,6 +1,7 @@
-# _Inference under a spatially-continuous coalescent model_ (in progress)
+# _Demographic inference under a spatially-continuous coalescent model_ (in progress)
 
-Simulation code used for data generation in _Inference under a spatially-continuous coalescent model_. This is a work in progress.
+Simulation code used for data generation in _Demographic inference under a spatially-continuous coalescent model_.
+
 
 ## Dependencies
 * Python v2.7
