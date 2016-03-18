@@ -1,4 +1,4 @@
-# _Demographic inference under a spatially-continuous coalescent model_ (in progress)
+# _Demographic inference under a spatially-continuous coalescent model_
 
 Simulation code used for data generation in _Demographic inference under a spatially-continuous coalescent model_.
 
