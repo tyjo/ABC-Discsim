@@ -1,6 +1,6 @@
 # _Demographic inference under a spatially-continuous coalescent model_
 
-Simulation code used for data generation in _Demographic inference under a spatially-continuous coalescent model_.
+Simulation code used for data generation in [Demographic inference under a spatially-continuous coalescent model](http://www.nature.com/hdy/journal/vaop/ncurrent/full/hdy201628a.html).
 
 
 ## Dependencies
